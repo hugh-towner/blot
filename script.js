@@ -226,8 +226,18 @@ var DrawText = (text, org, scale = 100, spacing = [2.5, 4.5]) => {
 // =============================================================
 // Main Program
 
+function centeredText(inputtext,center){
+  let scale = .6
+  let textWidth = inputtext.length*scale*3;
+  let textHeight = scale*4
+  
+  DrawText(inputtext, [center[0]-textWidth/2, center[1]-textHeight/2], scale,[3,4]);
+  return textWidth
 
-function decision(x,y,width){
+}
+
+function decision(x,y,inputText){
+  let width = centeredText(inputText,[x,y])+5;
   let shape = [
   [0, 10],
   [10, 20],
@@ -240,7 +250,8 @@ function decision(x,y,width){
   return shape
 }
 
-function process(x,y,width){
+function process(x,y,inputText){
+  let width = centeredText(inputText,[x,y])+3;
   let shape = [
   [0, 0],
   [0, 10],
@@ -248,13 +259,15 @@ function process(x,y,width){
   [10, 0],
   [0, 0]]
 
-  shape = bt.scale([shape], [width/10,width/25]);
+  shape = bt.scale([shape], [width/10,1]);
   shape = bt.translate(bt.originate(shape),[x,y]);
 
   return shape
 }
 
-function startStop(x,y,width){
+function startStop(x,y,inputText){
+  let width = centeredText(inputText,[x,y])+6;
+  if (width<20) width = 20
   const t = new bt.Turtle()
   let height = width/3
   t.left(180);
@@ -269,7 +282,8 @@ function startStop(x,y,width){
   return shape
 }
 
-function inputOutput(x,y,width){
+function inputOutput(x,y,inputText){
+  let width = centeredText(inputText,[x,y])+6;
   let shape = [
   [0, 0],
   [5, 10],
@@ -282,9 +296,9 @@ function inputOutput(x,y,width){
   return shape
 }
 
-function arrow(start,end,around){
-
-  let mid = [around[0],end[1]-start[1]]
+function arrow(start,end,via, inputText){
+  let mid = [via[0],end[1]-start[1]]
+  centeredText(inputText,mid)
   let points = bt.catmullRom([start,mid,end])
   let normal = bt.getNormal([points],1);
   let tangent = [-normal[1],normal[0]]
@@ -297,23 +311,15 @@ function arrow(start,end,around){
 }
 
 
-finalLines.push(...decision(width/2,height/2,20));
-finalLines.push(...process(width/2,30,25));
-centeredText("Process",[width/2,30,25])
-finalLines.push(...startStop(width/2,95,25));
-finalLines.push(...inputOutput(width/2,80,25));
+finalLines.push(...decision(width/2,height/2,"let me decide"));
+finalLines.push(...process(width/2,30,"magic processing function"));
+finalLines.push(...process(width/2,10,"short function"));
+finalLines.push(...startStop(width/2,95,"Start"));
+finalLines.push(...inputOutput(width/2,84,"input an important number"));
+finalLines.push(...inputOutput(width/2,41,"output"));
 
-finalLines.push(...arrow([30,30],[30,90],[14,90]));
 
-function centeredText(inputtext,center){
-  let scale = .6
-  let textWidth = inputtext.length*scale*3;
-  let textHeight = scale*4
-  
-  DrawText(inputtext, [center[0]-textWidth/2, center[1]-textHeight/2], scale,[3,4]);
+finalLines.push(...arrow([30,30],[30,90],[14,90], "An Arrow"));
 
-}
-
-centeredText("Decision",[width/2,height/2])
 // draw it
 drawLines(finalLines);
