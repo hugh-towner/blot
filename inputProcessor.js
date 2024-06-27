@@ -140,9 +140,6 @@ function getMaxDepth(graph, start, visited = new Set()) {
 
 
 
-console.log(getMaxDepth(graph, 'A'));
-
-
 function getNodesAtDepth(graph, start, depth, visited = new Set()) {
     let nodes = [];
     visited.add(start);
@@ -169,5 +166,59 @@ let nodesAtDepths = depths.map((depth) => getNodesAtDepth(graph, startNode, dept
 
 console.log(nodesAtDepths);
 
+let allNodes = output.map((arrow) => [arrow.start, arrow.end])
+                     .flat()
+                     .filter((node) => node.type !== 'id');
+
+
+scale = .6;
+
+allNodes.forEach((node) => {
+    switch(node.type) {
+        case 'start':
+        case 'io':
+            node.width = Math.round(node.label.length * scale * 3) + 6;
+            node.height = Math.round(node.width/3);
+            break;
+        case 'decision':
+            node.width = Math.round(node.label.length * scale * 3) + 5;
+            node.height = Math.round(node.width/2);
+            break;
+        case 'process':
+            node.width = Math.round(node.label.length * scale * 3) + 3;
+            node.height = Math.round(node.width/2);
+            break;
+    }
+})
+
+console.log(allNodes);
+
+nodesAtDepths = nodesAtDepths.map((nodesAtDepth) => {
+    return nodesAtDepth.map((nodeID) => allNodes.find((node) => node.id === nodeID));
+})
+
+console.log(nodesAtDepths);
+
+
+
+let ySpacing = 10;
+let xSpacing = 10;
+
+
+let maxDepthWidth = Math.max(...nodesAtDepths.map((nodesAtDepth) => {
+    let totalWidth = nodesAtDepth.reduce((acc, node) => acc + node.width, 0);
+    let spacingWidth = (nodesAtDepth.length - 1) * xSpacing;
+    return totalWidth + spacingWidth;
+}));
+
+
+console.log("width",maxDepthWidth);
+
+let totalHeight = nodesAtDepths.reduce((acc, nodesAtDepth) => {
+    let maxHeight = Math.max(...nodesAtDepth.map((node) => node.height));
+    return acc + maxHeight + ySpacing;
+}, 0);
+
+console.log("height",totalHeight);
 
 
